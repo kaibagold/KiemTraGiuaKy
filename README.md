@@ -1,1 +1,1 @@
-[Video Demo](https://drive.google.com/file/d/1PfgrrPJCB8zbOfzXvySXZRw8TY_HZsEc/view?usp=sharing)
+#Full code ben tree master nha Thay (https://github.com/kaibagold/KiemTraGiuaKy/tree/master)
