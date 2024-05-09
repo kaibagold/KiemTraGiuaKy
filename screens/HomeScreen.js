@@ -3,8 +3,37 @@ import { View, TextInput, TouchableOpacity, ScrollView, Text, StyleSheet, Alert 
 import firestore from "@react-native-firebase/firestore"
 
 const HomeScreen = () => {
-  const [text, setText] = useState('');
+  const [newTodo, setNewTodo] = useState('');
   const [items, setItems] = useState([]);
+  const cTodos = firestore().collection("ToDos")
+  const addNewTodo = ()=>{
+    cTodos.add({
+      title : newTodo,
+      complete : false
+    })
+    .then(()=> console.log("Add new todo"))
+    .catch(e=> console.log(e.message))
+  }
+
+  useEffect(()=>{
+    cTodos.onSnapshot(
+      listTodos=>{
+        var result = []
+        listTodos.forEach(
+          todo =>{
+            const {title,complete} = todo.data()
+            result.push({
+              id : todo.id,
+              title,
+              complete
+            })
+          }
+        )
+        //console.log(result)
+        setItems(result)
+      }
+    )
+  })
 
   const handleAddItem = () => {
     if (text.trim() !== '') {
@@ -19,16 +48,23 @@ const HomeScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Nhập dữ liệu..."
-          onChangeText={(text) => setText(text)}
-          value={text}
+          onChangeText={setNewTodo}
+          value={newTodo}
         />
-        <TouchableOpacity style={styles.addButton} onPress={handleAddItem}>
+        <TouchableOpacity style={styles.addButton} onPress={addNewTodo}>
           <Text style={styles.buttonText}>Add</Text>
         </TouchableOpacity>
       </View>
+      
       <ScrollView style={styles.scrollView}>
         {items.map((item, index) => (
-          <Text key={index} style={styles.item}>{item}</Text>
+          <TouchableOpacity
+            key={index}
+            style={[styles.item, { textDecorationLine: item.complete ? 'line-through' : 'none' }]}
+            onPress={() => toggleComplete(index)}
+          >
+            <Text>{item.title}</Text>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
@@ -75,5 +111,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
 });
+
 
 export default HomeScreen;
